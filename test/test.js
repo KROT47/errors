@@ -1,5 +1,5 @@
 
-var errors = require('..')
+var errors = require('../dist/errors').default
     , http = require('http')
     , should = require('should');
 
@@ -27,6 +27,7 @@ describe('errors export structure', function() {
 
     for (var code in http.STATUS_CODES) {
         it('should contain ' + http.STATUS_CODES[code] + ' Error', function() {
+            code = parseInt(code);
             var errorName = 'Http' + code + 'Error'
                 , errorInstance = new errors[errorName]();
             errors[errorName].should.be.a('function');
@@ -191,14 +192,6 @@ describe('errors.stacks()', function() {
     });
 });
 
-describe('errors.title()', function() {
-
-    it('should allow title to be settable', function() {
-        errors.title('My Title');
-        errors.title().should.equal('My Title');
-    });
-});
-
 describe('options style constructor', function() {
     var IdentifiableError = errors.create('IdentifiableError'),
         err = new IdentifiableError({message: 'Error with ref ID',
@@ -270,35 +263,35 @@ describe('native error to JSON', function() {
 	var NativeError = errors.create({name: 'NativeError'}),
 		typeError = new TypeError("Invalid type"),
 		useStacks = errors.stacks();
-	
+
 	errors.stacks(false);
-	
+
 	it('should include basic error attrs', function() {
 		var err = errors.errorToJSON(typeError);
 		err.should.include({name: 'TypeError', message: 'Invalid type'});
 		err.should.not.have.property('stack');
 	});
-	
+
 	it('should include stack', function() {
 		errors.stacks(true);
 		var err = errors.errorToJSON(typeError);
 		err.should.have.property('stack');
 		err.stack.should.equal(typeError.stack);
 	});
-	
+
 	it('should remap error attrs', function() {
 		errors.stacks(true);
 		var err = errors.errorToJSON(typeError, {'theStack': ['stack']});
 		err.should.have.property('theStack');
 		err.theStack.should.equal(typeError.stack);
 	});
-	
+
 	it('should map nested object properties', function() {
 		var typeError = new TypeError("Invalid type");
 		typeError['causes'] = {'unknown': 'unknown native cause'};
 		var err = errors.errorToJSON(typeError, {'cause': ['causes.unknown']});
 		err.cause.should.equal('unknown native cause');
 	});
-	
+
 	errors.stacks(useStacks);
 });

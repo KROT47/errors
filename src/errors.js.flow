@@ -1,0 +1,122 @@
+/* @flow */
+
+declare export default
+    & ErrorsModuleType
+    & JsErrorTypes
+    & HttpErrorTypes;
+
+type ErrorOptionsType = {|
+    name: string,
+    scope?: Object,
+    parent?: Function,
+    defaultMessage?: string,
+    code?: number,
+    status?: number,
+    defaultExplanation?: string,
+    defaultResponse?: string,
+|};
+
+type ErrorType = Error.constructor;
+
+type MapperFunctionType = ( err: ErrorType ) => ErrorType;
+
+
+type ErrorsModuleType = {
+
+    find( err: string ): ErrorType,
+
+    isError( err: Object ): boolean,
+
+    errorToJSON( err: ErrorType, attrMap: Object ): Object,
+
+    create( options: ErrorOptionsType ): ErrorType,
+
+    stacks( useStacks?: boolean ): ?boolean,
+
+    mapper(
+        errName: string | Array<string>,
+        fn?: MapperFunctionType
+    ): ?MapperFunctionType,
+
+    mapError( err: ErrorType ): ErrorType,
+};
+
+
+// =============================================================================
+// Default Errors
+// =============================================================================
+type JsErrorTypes = {
+    Error: Error.constructor,
+    EvalError: EvalError.constructor,
+    RangeError: RangeError.constructor,
+    ReferenceError: ReferenceError.constructor,
+    SyntaxError: SyntaxError.constructor,
+    TypeError: TypeError.constructor,
+    URIError: URIError.constructor,
+};
+
+type HttpErrorTypes = {
+    HttpError: ErrorType,
+    Http100Error: ErrorType,
+    Http101Error: ErrorType,
+    Http102Error: ErrorType,
+    Http200Error: ErrorType,
+    Http201Error: ErrorType,
+    Http202Error: ErrorType,
+    Http203Error: ErrorType,
+    Http204Error: ErrorType,
+    Http205Error: ErrorType,
+    Http206Error: ErrorType,
+    Http207Error: ErrorType,
+    Http208Error: ErrorType,
+    Http226Error: ErrorType,
+    Http300Error: ErrorType,
+    Http301Error: ErrorType,
+    Http302Error: ErrorType,
+    Http303Error: ErrorType,
+    Http304Error: ErrorType,
+    Http305Error: ErrorType,
+    Http307Error: ErrorType,
+    Http308Error: ErrorType,
+    Http400Error: ErrorType,
+    Http401Error: ErrorType,
+    Http402Error: ErrorType,
+    Http403Error: ErrorType,
+    Http404Error: ErrorType,
+    Http405Error: ErrorType,
+    Http406Error: ErrorType,
+    Http407Error: ErrorType,
+    Http408Error: ErrorType,
+    Http409Error: ErrorType,
+    Http410Error: ErrorType,
+    Http411Error: ErrorType,
+    Http412Error: ErrorType,
+    Http413Error: ErrorType,
+    Http414Error: ErrorType,
+    Http415Error: ErrorType,
+    Http416Error: ErrorType,
+    Http417Error: ErrorType,
+    Http418Error: ErrorType,
+    Http421Error: ErrorType,
+    Http422Error: ErrorType,
+    Http423Error: ErrorType,
+    Http424Error: ErrorType,
+    Http425Error: ErrorType,
+    Http426Error: ErrorType,
+    Http428Error: ErrorType,
+    Http429Error: ErrorType,
+    Http431Error: ErrorType,
+    Http451Error: ErrorType,
+    Http500Error: ErrorType,
+    Http501Error: ErrorType,
+    Http502Error: ErrorType,
+    Http503Error: ErrorType,
+    Http504Error: ErrorType,
+    Http505Error: ErrorType,
+    Http506Error: ErrorType,
+    Http507Error: ErrorType,
+    Http508Error: ErrorType,
+    Http509Error: ErrorType,
+    Http510Error: ErrorType,
+    Http511Error: ErrorType,
+};
