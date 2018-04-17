@@ -322,17 +322,20 @@ Errors.create({ name: 'HttpError' });
  *  // => text/plain
  *  // "You do not have access"
  */
-for (var _code in _httpStatusCodes2.default) {
-    _code = parseInt(_code);
+for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
+    var _HTTP_STATUS_CODES$i = _httpStatusCodes2.default[i],
+        _code = _HTTP_STATUS_CODES$i.code,
+        message = _HTTP_STATUS_CODES$i.message;
+
     // TODO: provide default explanation & response
-    if (_httpStatusCodes2.default.hasOwnProperty(_code) && _code >= 400) {
-        Errors.create({
-            name: 'Http' + _code + 'Error',
-            code: _code,
-            parent: Errors.HttpError,
-            defaultMessage: _httpStatusCodes2.default[_code]
-        });
-    }
+
+    Errors.create({
+        name: 'Http' + _code + 'Error',
+        code: _code,
+        status: _code,
+        parent: Errors.HttpError,
+        defaultMessage: message
+    });
 }
 
 // =============================================================================
@@ -449,6 +452,14 @@ function create(options) {
         formattedStack,
         stack = {};
 
+    if (className in scope) {
+        if (errorWasBuiltWithSameOptions(className, options)) {
+            return Names[className];
+        }
+
+        throw Error('Error ' + className + ' already defined');
+    }
+
     /**
      * Create a new instance of the exception which accepts
      * 2 forms of parameters.
@@ -473,21 +484,14 @@ function create(options) {
      * @param {String} fix The response to use for the error.
      * @return {Object} The newly created error.
      */
-    if (className in scope) {
-        if (errorWasBuiltWithSameOptions(className, options)) {
-            return Names[className];
-        }
-
-        throw Error('Error ' + className + ' already defined');
-    }
-
     var newErrorClass = scope[className] = function (msg, expl, fix) {
         var attrs = {};
         if (typeof msg !== null && (typeof msg === 'undefined' ? 'undefined' : _typeof(msg)) === 'object') {
             attrs = msg;
             msg = attrs.message || defaultMessage;
+
             if (attrs.hasOwnProperty('stack') || attrs.hasOwnProperty('name') || attrs.hasOwnProperty('code')) {
-                throw Error("Properties 'stack', 'name' or 'code' " + 'cannot be overridden');
+                throw Error('Properties \'stack\', \'name\' or \'code\' ' + 'cannot be overridden');
             }
         }
         attrs.status = attrs.status || statusCode;
@@ -566,7 +570,7 @@ function create(options) {
          * @api public
          */
         Object.defineProperty(this, 'status', {
-            value: attrs.status || (_httpStatusCodes2.default[errorCode] ? errorCode : 500),
+            value: attrs.status || 500,
             configurable: true,
             // normalize for http status code and connect compat
             enumerable: true
@@ -614,6 +618,17 @@ function create(options) {
             enumerable: false,
             writable: true,
             configurable: true
+        },
+
+        /**
+         * Returns first found child of current error
+         */
+        getFirstChild: {
+            value: function value(errors) {
+                for (var i = errors.length; i--;) {
+                    if (errors[i] instanceof this) return errors[i];
+                }
+            }
         }
     });
 
@@ -625,20 +640,6 @@ function create(options) {
      */
     Object.defineProperty(newErrorClass.prototype, 'name', {
         value: className,
-        enumerable: true
-    });
-
-    /**
-     * Returns true if errors array contains
-     * at least one child of this Error
-     */
-    Object.defineProperty(newErrorClass, 'isParentOfSome', {
-        value: function value(errors) {
-            for (var i = errors.length; i--;) {
-                if (errors[i] instanceof this) return errors[i];
-            }
-        },
-
         enumerable: true
     });
 

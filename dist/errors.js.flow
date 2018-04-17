@@ -27,6 +27,8 @@ type ErrorsModuleType = {
 
     isError( err: Object ): boolean,
 
+    getFirstChild( errors: Array<ErrorType> ): ?ErrorType,
+
     errorToJSON( err: ErrorType, attrMap: Object ): Object,
 
     create( options: ErrorOptionsType ): ErrorType,

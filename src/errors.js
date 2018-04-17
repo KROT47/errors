@@ -24,7 +24,7 @@ type ErrorOptionsType = {|
     defaultResponse?: string,
 |};
 
-type ErrorType = ErrorOptionsType;
+type ErrorType = Error.constructor;
 
 type MapperFunctionType = ( err: ErrorType ) => ErrorType;
 
@@ -327,17 +327,17 @@ Errors.create({ name: 'HttpError' });
  *  // => text/plain
  *  // "You do not have access"
  */
-for ( let code in HTTP_STATUS_CODES ) {
-    code = parseInt( code );
+for ( var i = 0; i < HTTP_STATUS_CODES.length; ++i ) {
+    const { code, message } = HTTP_STATUS_CODES[ i ];
+
     // TODO: provide default explanation & response
-    if ( HTTP_STATUS_CODES.hasOwnProperty( code ) && code >= 400 ) {
-        Errors.create({
-            name: `Http${ code }Error`,
-            code,
-            parent: Errors.HttpError,
-            defaultMessage: HTTP_STATUS_CODES[ code ],
-        });
-    }
+    Errors.create({
+        name: `Http${ code }Error`,
+        code,
+        status: code,
+        parent: Errors.HttpError,
+        defaultMessage: message,
+    });
 }
 
 
@@ -459,6 +459,14 @@ function create( options: ErrorOptionsType ) {
         stack = {};
 
 
+    if ( className in scope ) {
+        if ( errorWasBuiltWithSameOptions( className, options ) ) {
+            return Names[ className ];
+        }
+
+        throw Error( `Error ${ className } already defined` );
+    }
+
     /**
      * Create a new instance of the exception which accepts
      * 2 forms of parameters.
@@ -483,25 +491,21 @@ function create( options: ErrorOptionsType ) {
      * @param {String} fix The response to use for the error.
      * @return {Object} The newly created error.
      */
-    if ( className in scope ) {
-        if ( errorWasBuiltWithSameOptions( className, options ) ) {
-            return Names[ className ];
-        }
-
-        throw Error( `Error ${ className } already defined` );
-    }
-
     const newErrorClass = scope[ className ] =
         function ( msg, expl, fix ) {
             let attrs = {};
             if ( typeof msg !== null && typeof msg === 'object' ) {
                 attrs = msg;
                 msg = attrs.message || defaultMessage;
+
                 if ( attrs.hasOwnProperty( 'stack' )
-                        || attrs.hasOwnProperty( 'name' )
-                        || attrs.hasOwnProperty( 'code' ) ) {
-                    throw Error( "Properties 'stack', 'name' or 'code' " +
-                            'cannot be overridden' );
+                    || attrs.hasOwnProperty( 'name' )
+                    || attrs.hasOwnProperty( 'code' )
+                ) {
+                    throw Error(
+                        `Properties 'stack', 'name' or 'code' ` +
+                        'cannot be overridden'
+                    );
                 }
             }
             attrs.status = attrs.status || statusCode;
@@ -528,7 +532,11 @@ function create( options: ErrorOptionsType ) {
                 enumerable: false,
                 get() {
                     if ( !formattedStack ) {
-                        formattedStack = stack.stack.replace( '[object Object]', `Error: ${ this.message }` );
+                        formattedStack =
+                            stack.stack.replace(
+                                '[object Object]',
+                                `Error: ${ this.message }`
+                            );
                     }
                     return formattedStack;
                 },
@@ -580,9 +588,7 @@ function create( options: ErrorOptionsType ) {
              * @api public
              */
             Object.defineProperty( this, 'status', {
-                value:
-                    attrs.status
-                    || ( HTTP_STATUS_CODES[ errorCode ] ? errorCode : 500 ),
+                value: attrs.status || 500,
                 configurable: true,
                 // normalize for http status code and connect compat
                 enumerable: true,
@@ -629,8 +635,19 @@ function create( options: ErrorOptionsType ) {
             value: newErrorClass,
             enumerable: false,
             writable: true,
-            configurable: true
-        }
+            configurable: true,
+        },
+
+        /**
+         * Returns first found child of current error
+         */
+        getFirstChild: {
+            value( errors: Array<ErrorType> ): ?ErrorType {
+                for ( var i = errors.length; i--; ) {
+                    if ( errors[ i ] instanceof this ) return errors[ i ];
+                }
+            },
+        },
     });
 
     /**
@@ -641,19 +658,6 @@ function create( options: ErrorOptionsType ) {
      */
     Object.defineProperty( newErrorClass.prototype, 'name', {
         value: className,
-        enumerable: true,
-    });
-
-    /**
-     * Returns true if errors array contains
-     * at least one child of this Error
-     */
-    Object.defineProperty( newErrorClass, 'isParentOfSome', {
-        value( errors: Array<ErrorType> ): ?ErrorType {
-            for ( var i = errors.length; i--; ) {
-                if ( errors[ i ] instanceof this ) return errors[ i ];
-            }
-        },
         enumerable: true,
     });
 
