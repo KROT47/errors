@@ -19,7 +19,7 @@ errors when needed.
 
 Install using `npm`:
 
-    $ npm install errors
+    $ npm install @bubblehunt/errors
 
 ## Running the tests
 
@@ -46,7 +46,12 @@ make doc
 
 The examples assume you've `require`d the errors module like so:
 ```js
-require('errors');
+const errors = require('@bubblehunt/errors').default;
+```
+
+or
+```js
+import errors from '@bubblehunt/errors';
 ```
 
 Create a very barebones error -- you must specify at least the error name:

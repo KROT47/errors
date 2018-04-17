@@ -1,6 +1,6 @@
 {
     "name": "@bubblehunt/errors",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "A comprehensive, robust, yet lightweight set of error utilities for node.js enabling you to do errors more effectively.",
     "keywords": [
         "error",
