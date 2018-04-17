@@ -19,9 +19,10 @@ const RootDir = process.cwd();
 const InputDirPath = `${ RootDir }/src`;
 const OutputDirPath = `${ RootDir }/dist`;
 
-const DefaultBabelOptions = {
+const BabelOptions = {
     babelrc: false,
     "presets": [
+        "es2015",
         "flow",
     ],
     "plugins": [
@@ -29,18 +30,6 @@ const DefaultBabelOptions = {
         "babel-plugin-transform-class-properties",
     ],
 };
-
-const BabelOptions = prepareBabelOptions( DefaultBabelOptions, {
-    "presets": [
-        "es2015",
-    ],
-})
-
-const MinifyBabelOptions = prepareBabelOptions( DefaultBabelOptions, {
-    "presets": [
-        "babel-preset-babili",
-    ],
-});
 
 
 // =============================================================================
@@ -67,16 +56,6 @@ for ( var i = inputJsFiles.length; i--; ) {
                     babelTransform( inputFilePath, BabelOptions );
 
             FS.writeFileSync( outputFilePath, compiledCode );
-
-            // Plus minified version
-            // --------------------------------------------------------
-            var compiledCode =
-                    babelTransform( inputFilePath, MinifyBabelOptions );
-
-            FS.writeFileSync(
-                changeExt( outputFilePath, '.min.js' ),
-                compiledCode
-            );
         break;
 
         case '.flow':
@@ -101,17 +80,4 @@ function babelTransform( jsFilePath, BabelOptions ) {
     const { code, map, ast } = transformFileSync( jsFilePath, BabelOptions );
 
     return code;
-}
-
-function prepareBabelOptions( defaultOptions, options ) {
-    // $FlowFixMe
-    return _.mergeWith( {}, defaultOptions, options, concatArrays );
-}
-
-function concatArrays( objValue, srcValue ) {
-    if ( _.isArray( objValue ) ) return objValue.concat( srcValue );
-}
-
-function changeExt( path, newExt ) {
-    return path.replace( /\.[^/.]+$/, newExt );
 }
