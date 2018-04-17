@@ -1,5 +1,5 @@
 {
-    "name": "@krot47/errors",
+    "name": "@bubblehunt/errors",
     "version": "0.5.0",
     "description": "A comprehensive, robust, yet lightweight set of error utilities for node.js enabling you to do errors more effectively.",
     "keywords": [
