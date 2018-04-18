@@ -13,7 +13,7 @@ import HTTP_STATUS_CODES from './http-status-codes.json';
 
 // Flow types
 // --------------------------------------------------------
-type ErrorOptionsType = {|
+type ErrorOptionsType = {
     name: string,
     scope?: Object,
     parent?: Function,
@@ -22,9 +22,11 @@ type ErrorOptionsType = {|
     status?: number,
     defaultExplanation?: string,
     defaultResponse?: string,
-|};
+};
 
-type ErrorType = Error.constructor;
+type DefaultErrorType = Error;
+
+type ErrorType = DefaultErrorType;
 
 type MapperFunctionType = ( err: ErrorType ) => ErrorType;
 
