@@ -5,7 +5,7 @@ declare export default
     & JsErrorTypes
     & HttpErrorTypes;
 
-type ErrorOptionsType = {|
+export type ErrorOptionsType = {
     name: string,
     scope?: Object,
     parent?: Function,
@@ -14,14 +14,14 @@ type ErrorOptionsType = {|
     status?: number,
     defaultExplanation?: string,
     defaultResponse?: string,
-|};
+};
 
-type ErrorType = Error.constructor;
+export type ErrorType = Error.constructor;
 
-type MapperFunctionType = ( err: ErrorType ) => ErrorType;
+export type MapperFunctionType = ( err: ErrorType ) => ErrorType;
 
 
-type ErrorsModuleType = {
+export type ErrorsModuleType = {
 
     find( err: string ): ErrorType,
 
@@ -47,7 +47,7 @@ type ErrorsModuleType = {
 // =============================================================================
 // Default Errors
 // =============================================================================
-type JsErrorTypes = {
+export type JsErrorTypes = {
     Error: Error.constructor,
     EvalError: EvalError.constructor,
     RangeError: RangeError.constructor,
@@ -57,7 +57,7 @@ type JsErrorTypes = {
     URIError: URIError.constructor,
 };
 
-type HttpErrorTypes = {
+export type HttpErrorTypes = {
     HttpError: ErrorType,
     Http100Error: ErrorType,
     Http101Error: ErrorType,
