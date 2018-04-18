@@ -16,6 +16,8 @@ esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 esproposal.export_star_as=enable
 
+include_warnings=true
+
 # decorators are not working yet so better don't use them
 # but if it is needed uncomment following line
 # esproposal.decorators=ignore
@@ -26,6 +28,8 @@ esproposal.export_star_as=enable
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe
 # same but to define flow issue
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue
+# for testing purposes
+suppress_comment=\\(.\\|\n\\)*\\$FlowThrowsError
 
 # instead of using `any` you may use suppress_type to define some undone work. For example:
 # | var myString: $FlowFixMe = 1 + 1;
