@@ -639,17 +639,6 @@ function create( options: ErrorOptionsType ): Class<ErrorType> {
             writable: true,
             configurable: true,
         },
-
-        /**
-         * Returns first found child of current error
-         */
-        getFirstChild: {
-            value( errors: Array<ErrorType> ): ?ErrorType {
-                for ( var i = errors.length; i--; ) {
-                    if ( errors[ i ] instanceof this ) return errors[ i ];
-                }
-            },
-        },
     });
 
     /**

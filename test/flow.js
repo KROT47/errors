@@ -55,6 +55,11 @@ var myError = new MyError();
 myError._message
 myError.myProp
 
+myError.code
+myError.status
+myError.response
+myError.explanation
+
 // Errors
 // --------------------------------------------------------
 // $FlowThrowsError

@@ -19,6 +19,13 @@ export interface DefaultErrorOptionsType {
     defaultResponse?: string,
 };
 
+export interface ErrorPrototypeType<ErrorType: DefaultErrorType> {
+    code?: number,
+    status?: number,
+    explanation?: string,
+    response?: string,
+};
+
 export type DefaultErrorType = Error;
 
 export type MapperFunctionType<ErrorType: DefaultErrorType> =
@@ -28,13 +35,20 @@ export type MapperFunctionType<ErrorType: DefaultErrorType> =
 export type ErrorsModulePrototypeType<
     ErrorType: DefaultErrorType,
     ErrorOptionsType: DefaultErrorOptionsType
+> =
+_ErrorsModulePrototypeType<
+    ErrorPrototypeType<ErrorType> & ErrorType,
+    ErrorOptionsType
+>;
+
+type _ErrorsModulePrototypeType<
+    ErrorType: DefaultErrorType,
+    ErrorOptionsType: DefaultErrorOptionsType
 > = {
 
     find( err: string ): ErrorType,
 
     isError( err: Object ): boolean,
-
-    getFirstChild( errors: Array<ErrorType> ): ?ErrorType,
 
     errorToJSON( err: ErrorType, attrMap: Object ): Object,
 

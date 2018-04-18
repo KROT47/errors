@@ -618,17 +618,6 @@ function create(options) {
             enumerable: false,
             writable: true,
             configurable: true
-        },
-
-        /**
-         * Returns first found child of current error
-         */
-        getFirstChild: {
-            value: function value(errors) {
-                for (var i = errors.length; i--;) {
-                    if (errors[i] instanceof this) return errors[i];
-                }
-            }
         }
     });
 
