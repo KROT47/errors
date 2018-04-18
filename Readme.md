@@ -54,6 +54,13 @@ or
 import errors from '@bubblehunt/errors';
 ```
 
+#### Override flow types
+
+See example at `test/flow.js`
+
+
+#### Create new errors
+
 Create a very barebones error -- you must specify at least the error name:
 
 ```js

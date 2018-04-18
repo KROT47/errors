@@ -7,7 +7,7 @@ DOX_FOUNDATION := $(NODE_BIN)dox-foundation
 MOCHA := $(NODE_BIN)mocha
 
 test:
-	@NODE_ENV=test $(MOCHA) --require should --reporter spec
+	@NODE_ENV=test $(MOCHA) "test/test.js" --require should --reporter spec
 
 doc: $(PROJECT)/lib/*.js
 	$(MARKDOX) -o $(MD_PATH)$(patsubst %.js,%.md,$(notdir $?)) $?
