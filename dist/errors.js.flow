@@ -38,7 +38,7 @@ export type ErrorsModulePrototypeType<
 
     errorToJSON( err: ErrorType, attrMap: Object ): Object,
 
-    create( options: ErrorOptionsType ): ErrorType,
+    create( options: ErrorOptionsType ): Class<ErrorType>,
 
     stacks( useStacks?: boolean ): ?boolean,
 

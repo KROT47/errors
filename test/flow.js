@@ -44,11 +44,13 @@ const MyErrors: ErrorsModuleType<MyErrorType, MyOptionsType> = Errors;
 
 // Correct
 // --------------------------------------------------------
-var myError = MyErrors.create({
+var MyError = MyErrors.create({
     name: 'MYERROR',
     _message: 'some message',
     myProp: 1,
 });
+
+var myError = new MyError();
 
 myError._message
 myError.myProp

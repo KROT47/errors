@@ -445,7 +445,7 @@ for ( var i = 0; i < HTTP_STATUS_CODES.length; ++i ) {
  * @return {Function} the newly created constructor
  * @api public
  */
-function create( options: ErrorOptionsType ) {
+function create( options: ErrorOptionsType ): Class<ErrorType> {
     var options = options || {},
         scope = options.scope || Errors,
         parent = options.parent || Error,
@@ -738,6 +738,7 @@ function create( options: ErrorOptionsType ) {
 
     cache( className, errorCode, newErrorClass, options );
 
+    // $FlowFixMe
     return newErrorClass;
 }
 

@@ -711,6 +711,7 @@ function create(options) {
 
     cache(className, errorCode, newErrorClass, options);
 
+    // $FlowFixMe
     return newErrorClass;
 }
 
