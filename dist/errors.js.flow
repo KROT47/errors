@@ -48,9 +48,9 @@ type _ErrorsModulePrototypeType<
 
     find( err: string ): ErrorType,
 
-    isError( err: Object ): boolean,
+    isError( err?: ?Object ): boolean,
 
-    errorToJSON( err: ErrorType, attrMap: Object ): Object,
+    errorToJSON( err: ?ErrorType, attrMap?: Object ): Object,
 
     create( options: ErrorOptionsType ): Class<ErrorType>,
 

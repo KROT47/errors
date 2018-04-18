@@ -111,8 +111,8 @@ const Errors: Object = {
      * @returns {Boolean}
      * @api private
      */
-    isError( err: Object ): boolean {
-        return (
+    isError( err?: ?Object ): boolean {
+        return Boolean(
             err
             && err.hasOwnProperty( 'explanation' )
             && err.hasOwnProperty( 'code' )
@@ -135,7 +135,9 @@ const Errors: Object = {
      * attributes (e.g. constructor.name).
      * @api public
      */
-    errorToJSON( err: ErrorType, attrMap: Object ): Object {
+    errorToJSON( err: ?ErrorType, attrMap?: Object ): Object {
+        if ( !err ) return {};
+
         let attrs = attrMap || _DEFAULT_ERROR_MAPPING,
             formatted = {};
 

@@ -106,7 +106,7 @@ var Errors = {
      * @api private
      */
     isError: function isError(err) {
-        return err && err.hasOwnProperty('explanation') && err.hasOwnProperty('code');
+        return Boolean(err && err.hasOwnProperty('explanation') && err.hasOwnProperty('code'));
     },
 
 
@@ -127,6 +127,8 @@ var Errors = {
      * @api public
      */
     errorToJSON: function errorToJSON(err, attrMap) {
+        if (!err) return {};
+
         var attrs = attrMap || _DEFAULT_ERROR_MAPPING,
             formatted = {};
 
