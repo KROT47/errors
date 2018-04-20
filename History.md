@@ -1,3 +1,10 @@
+0.8.0 / 2018-04-20
+==================
+
+* Replace defaultMessage, defaultExplanation and defaultResponse with message, explanation and response
+* Revisioned flow types
+
+
 0.5.0 / 2018-04-17
 ==================
 

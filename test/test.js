@@ -41,17 +41,17 @@ describe('errors export structure', function() {
 
 var FatalError = errors.create({
     name: 'FatalError',
-    defaultMessage: 'A Fatal Error Occurred.'
+    message: 'A Fatal Error Occurred.'
 });
 var FatalDBError = errors.create({
     name: 'FatalDBError',
     parent: FatalError,
-    defaultMessage: 'A Fatal Database Error Occurred.'
+    message: 'A Fatal Database Error Occurred.'
 });
 var FatalDBTransactionError = errors.create({
     name: 'FatalDBTransactionError',
     parent: FatalDBError,
-    defaultMessage: 'A Fatal Database Transaction Error Occurred.'
+    message: 'A Fatal Database Transaction Error Occurred.'
 });
 
 var fatalError = new FatalError()
@@ -138,7 +138,7 @@ describe('default error message handling', function() {
 
     var FileEncodingError = errors.create({
         name: 'FileEncodingError',
-        defaultMessage: 'File encoding is invalid and cannot be read.'
+        message: 'File encoding is invalid and cannot be read.'
     });
     var feError = new FileEncodingError();
 
@@ -193,7 +193,7 @@ describe('errors.stacks()', function() {
 });
 
 describe('options style constructor', function() {
-    var IdentifiableError = errors.create('IdentifiableError'),
+    var IdentifiableError = errors.create({name: 'IdentifiableError'}),
         err = new IdentifiableError({message: 'Error with ref ID',
             status: 501, refID: 'a1b2c3'});
 
@@ -264,26 +264,35 @@ describe('native error to JSON', function() {
 		typeError = new TypeError("Invalid type"),
 		useStacks = errors.stacks();
 
-	errors.stacks(false);
 
-	it('should include basic error attrs', function() {
+    it('should include basic error attrs', function() {
+	   errors.stacks(false);
+
 		var err = errors.errorToJSON(typeError);
 		err.should.include({name: 'TypeError', message: 'Invalid type'});
 		err.should.not.have.property('stack');
-	});
 
-	it('should include stack', function() {
-		errors.stacks(true);
-		var err = errors.errorToJSON(typeError);
-		err.should.have.property('stack');
-		err.stack.should.equal(typeError.stack);
-	});
+        errors.stacks(useStacks);
+    });
 
-	it('should remap error attrs', function() {
-		errors.stacks(true);
-		var err = errors.errorToJSON(typeError, {'theStack': ['stack']});
-		err.should.have.property('theStack');
-		err.theStack.should.equal(typeError.stack);
+    it('should include stack', function() {
+        errors.stacks(true);
+
+        var err = errors.errorToJSON(typeError);
+        err.should.have.property('stack');
+        err.stack.should.equal(typeError.stack);
+
+        errors.stacks(useStacks);
+    });
+
+    it('should remap error attrs', function() {
+        errors.stacks(true);
+
+        var err = errors.errorToJSON(typeError, {'theStack': ['stack']});
+        err.should.have.property('theStack');
+        err.theStack.should.equal(typeError.stack);
+
+        errors.stacks(useStacks);
 	});
 
 	it('should map nested object properties', function() {
@@ -292,6 +301,34 @@ describe('native error to JSON', function() {
 		var err = errors.errorToJSON(typeError, {'cause': ['causes.unknown']});
 		err.cause.should.equal('unknown native cause');
 	});
+});
 
-	errors.stacks(useStacks);
+describe('user defined attrs', function() {
+    var TestError = errors.create({
+            name: 'TestError',
+            fields: {},
+        }),
+        test1Error = new TestError(),
+        test2Error = new TestError({ fields: { a: 1 } });
+
+
+    it('should include default attrs', function() {
+        test1Error.should.include({name: 'TestError',fields: {}});
+    });
+
+    it('should include user defined attrs', function() {
+        test2Error.should.include({name: 'TestError', fields: { a: 1 } });
+    });
+
+    it('should update user defined attrs on demand', function() {
+        test2Error.fields.b = 2;
+        test2Error.should.include({name: 'TestError', fields: { a: 1, b: 2 } });
+    });
+
+    it('should include user defined attrs in JSON', function() {
+        const err = test2Error.toJSON();
+        err.should.not.have.property('stack');
+        err.should.include({ fields: { a: 1, b: 2 } });
+    });
+
 });

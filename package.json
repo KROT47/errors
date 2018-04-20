@@ -1,6 +1,6 @@
 {
     "name": "@bubblehunt/errors",
-    "version": "0.7.1",
+    "version": "0.8.0",
     "description": "A comprehensive, robust, yet lightweight set of error utilities for node.js enabling you to do errors more effectively.",
     "keywords": [
         "error",
@@ -23,8 +23,9 @@
     },
     "scripts": {
         "clean:dist": "rm -rf dist/*",
-        "build": "yarn clean:dist && babel-node build/build",
-        "test": "make test && yarn flow"
+        "build": "$npm_execpath run clean:dist && babel-node build/build",
+        "test": "make test && $npm_execpath run flow",
+        "flow": "node_modules/.bin/flow"
     },
     "directories": {
         "doc": "./doc"

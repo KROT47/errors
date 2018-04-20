@@ -1,49 +1,44 @@
 /* @flow */
 
-declare export default
-    ErrorsModuleType<DefaultErrorType, DefaultErrorOptionsType>;
+declare export default ErrorsModuleType<UserDefinedOptionsType>;
 
-export type ErrorsModuleType<ErrorType, ErrorOptionsType> =
-    & ErrorsModulePrototypeType<ErrorType, ErrorOptionsType>
+export type ErrorsModuleType<UserDefinedOptionsType> =
+    & ErrorsModulePrototypeType<
+        ErrorOptionsType & UserDefinedOptionsType,
+        DefaultErrorType & UserDefinedOptionsType
+    >
     & JsErrorTypes
     & HttpErrorTypes;
 
-export interface DefaultErrorOptionsType {
+interface UserDefinedOptionsType {};
+
+export interface ErrorOptionsType {
     name: string,
     scope?: Object,
     parent?: Function,
     code?: number,
     status?: number,
-    defaultMessage?: string,
-    defaultExplanation?: string,
-    defaultResponse?: string,
-};
-
-export interface ErrorPrototypeType<ErrorType: DefaultErrorType> {
-    code?: number,
-    status?: number,
+    message?: string,
     explanation?: string,
     response?: string,
 };
 
-export type DefaultErrorType = Error;
+export interface DefaultErrorType extends Error {
+    code: number,
+    status: number,
+    explanation: ?string,
+    response: ?string,
+
+    toJSON: () => Object,
+};
 
 export type MapperFunctionType<ErrorType: DefaultErrorType> =
     ( err: ErrorType ) => ErrorType;
 
 
 export type ErrorsModulePrototypeType<
-    ErrorType: DefaultErrorType,
-    ErrorOptionsType: DefaultErrorOptionsType
-> =
-_ErrorsModulePrototypeType<
-    ErrorPrototypeType<ErrorType> & ErrorType,
-    ErrorOptionsType
->;
-
-type _ErrorsModulePrototypeType<
-    ErrorType: DefaultErrorType,
-    ErrorOptionsType: DefaultErrorOptionsType
+    ErrorOptionsType,
+    ErrorType
 > = {
 
     find( err: string ): ErrorType,

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 /**
  * Base taken from https://www.npmjs.com/package/errors
@@ -327,7 +327,7 @@ Errors.create({ name: 'HttpError' });
 for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
     var _HTTP_STATUS_CODES$i = _httpStatusCodes2.default[i],
         _code = _HTTP_STATUS_CODES$i.code,
-        message = _HTTP_STATUS_CODES$i.message;
+        _message = _HTTP_STATUS_CODES$i.message;
 
     // TODO: provide default explanation & response
 
@@ -336,7 +336,7 @@ for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
         code: _code,
         status: _code,
         parent: Errors.HttpError,
-        defaultMessage: message
+        message: _message
     });
 }
 
@@ -364,8 +364,8 @@ for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
  * The `parent` option specifies the parent to inherit
  * from. If unspecified it defaults to `Error`.
  *
- * The `defaultMessage`, `defaultExplanation` and
- * `defaultResponse` define the default text to use
+ * The `message`, `explanation` and
+ * `response` define the default text to use
  * for the new errors `message`, `explanation` and
  * `response` respectively. These values can be
  * overridden at construction time.
@@ -406,7 +406,7 @@ for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
  *  errors.create({
  *      name: 'SocketReadError',
  *      code: 4000,
- *      defaultMessage: 'Could not read from socket'
+ *      message: 'Could not read from socket'
  *  });
  *  var sre = new errors.SocketReadError();
  *  sre.message;
@@ -420,9 +420,9 @@ for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
  *  errors.create({
  *      name: 'SocketReadError',
  *      code: 4000,
- *      defaultMessage: 'Could not read from socket',
- *      defaultExplanation: 'Unable to obtain a reference to the socket',
- *      defaultResponse: 'Specify a different port or socket and retry the operation'
+ *      message: 'Could not read from socket',
+ *      explanation: 'Unable to obtain a reference to the socket',
+ *      response: 'Specify a different port or socket and retry the operation'
  *  });
  *  var sre = new errors.SocketReadError();
  *  sre.explanation;
@@ -433,26 +433,58 @@ for (var i = 0; i < _httpStatusCodes2.default.length; ++i) {
  * @param {String} name The constructor name.
  * @param {Object} scope The scope (i.e. namespace).
  * @param {Function} parent The parent to inherit from.
- * @param {String} defaultMessage The default message.
+ * @param {String} message The default message.
  * @param {Number} code The error code.
  * @param {Number} status The status code.
- * @param {String} defaultExplanation The default explanation.
- * @param {String} defaultResponse The default operator response.
+ * @param {String} explanation The default explanation.
+ * @param {String} response The default operator response.
  * @return {Function} the newly created constructor
  * @api public
  */
+
+var DefaultErrorOptions = {
+    message: undefined,
+    explanation: undefined,
+    response: undefined,
+    code: undefined
+};
+
 function create(options) {
-    var options = options || {},
-        scope = options.scope || Errors,
-        parent = options.parent || Error,
-        defaultMessage = options.defaultMessage || 'An unexpected ' + options.name + ' occurred.',
-        className = options.name,
-        errorCode = options.code || nextCode(),
-        statusCode = options.status,
-        defaultExplanation = options.defaultExplanation,
-        defaultResponse = options.defaultResponse,
-        formattedStack,
+
+    options.message = options.message || 'An unexpected ' + options.name + ' occurred.';
+
+    var _options$scope = options.scope,
+        scope = _options$scope === undefined ? Errors : _options$scope,
+        _options$parent = options.parent,
+        parent = _options$parent === undefined ? Error : _options$parent,
+        name = options.name,
+        _options$code = options.code,
+        code = _options$code === undefined ? nextCode() : _options$code,
+        status = options.status,
+        message = options.message,
+        explanation = options.explanation,
+        response = options.response;
+
+
+    var className = name;
+
+    var formattedStack,
         stack = {};
+
+    // var options = options || {},
+    //     scope = options.scope || Errors,
+    //     parent = options.parent || Error,
+    //     message =
+    //         options.message
+    //         || `An unexpected ${ options.name } occurred.`,
+    //     className = options.name,
+    //     errorCode = options.code || nextCode(),
+    //     statusCode = options.status,
+    //     explanation = options.explanation,
+    //     response = options.response,
+    //     formattedStack,
+    //     stack = {};
+
 
     if (className in scope) {
         if (errorWasBuiltWithSameOptions(className, options)) {
@@ -486,22 +518,27 @@ function create(options) {
      * @param {String} fix The response to use for the error.
      * @return {Object} The newly created error.
      */
-    var newErrorClass = scope[className] = function (msg, expl, fix) {
-        var attrs = {};
-        if (typeof msg !== null && (typeof msg === 'undefined' ? 'undefined' : _typeof(msg)) === 'object') {
-            attrs = msg;
-            msg = attrs.message || defaultMessage;
+    var newErrorClass = scope[className] = function (message, explanation, response) {
+        var attrs = message || {};
 
-            if (attrs.hasOwnProperty('stack') || attrs.hasOwnProperty('name') || attrs.hasOwnProperty('code')) {
-                throw Error('Properties \'stack\', \'name\' or \'code\' ' + 'cannot be overridden');
-            }
+        if (typeof message === 'string') {
+            attrs = {
+                message: message,
+                explanation: explanation,
+                response: response
+            };
         }
-        attrs.status = attrs.status || statusCode;
-        msg = msg || defaultMessage;
-        expl = expl || defaultExplanation;
-        fix = fix || defaultResponse;
 
-        parent.call(this, msg);
+        if (attrs.hasOwnProperty('stack') || attrs.hasOwnProperty('name') || attrs.hasOwnProperty('code')) {
+            throw Error('Properties \'stack\', \'name\' or \'code\' ' + 'cannot be overridden');
+        }
+
+        attrs = _extends({}, DefaultErrorOptions, options, attrs);
+
+        attrs.code = attrs.code || code;
+        attrs.status = attrs.status || 500;
+
+        parent.call(this, attrs.message);
 
         // hack around the defineProperty for stack so
         // we can delay stack formatting until access
@@ -526,92 +563,102 @@ function create(options) {
             }
         });
 
+        for (var key in attrs) {
+            // if ( !this.hasOwnProperty( key ) ) {
+            Object.defineProperty(this, key, {
+                value: attrs[key],
+                configurable: true,
+                enumerable: true
+            });
+            // }
+        }
+
         /**
          * Return the explanation for this error.
          *
          * @return {String}
          * @api public
          */
-        Object.defineProperty(this, 'explanation', {
-            value: attrs.explanation || expl,
-            configurable: true,
-            enumerable: true
-        });
+        // Object.defineProperty( this, 'explanation', {
+        //     value: attrs.explanation || expl,
+        //     configurable: true,
+        //     enumerable: true,
+        // });
 
-        /**
-         * Return the operator response for this error.
-         *
-         * @return {String}
-         * @api public
-         */
-        Object.defineProperty(this, 'response', {
-            value: attrs.response || fix,
-            configurable: true,
-            enumerable: true
-        });
+        // /**
+        //  * Return the operator response for this error.
+        //  *
+        //  * @return {String}
+        //  * @api public
+        //  */
+        // Object.defineProperty( this, 'response', {
+        //     value: attrs.response || fix,
+        //     configurable: true,
+        //     enumerable: true,
+        // });
 
-        /**
-         * Return the error code.
-         *
-         * @return {Number}
-         * @api public
-         */
-        Object.defineProperty(this, 'code', {
-            value: attrs.code || errorCode,
-            configurable: true,
-            enumerable: true
-        });
+        // /**
+        //  * Return the error code.
+        //  *
+        //  * @return {Number}
+        //  * @api public
+        //  */
+        // Object.defineProperty( this, 'code', {
+        //     value: attrs.code || code,
+        //     configurable: true,
+        //     enumerable: true,
+        // });
 
-        /**
-         * HTTP status code of this error.
-         *
-         * If the instance's `code` is not a valid
-         * HTTP status code it's normalized to 500.s
-         *
-         * @return {Number}
-         * @api public
-         */
-        Object.defineProperty(this, 'status', {
-            value: attrs.status || 500,
-            configurable: true,
-            // normalize for http status code and connect compat
-            enumerable: true
-        });
+        // /**
+        //  * HTTP status code of this error.
+        //  *
+        //  * If the instance's `code` is not a valid
+        //  * HTTP status code it's normalized to 500.s
+        //  *
+        //  * @return {Number}
+        //  * @api public
+        //  */
+        // Object.defineProperty( this, 'status', {
+        //     value: attrs.status || 500,
+        //     configurable: true,
+        //     // normalize for http status code and connect compat
+        //     enumerable: true,
+        // });
 
-        /**
-         * Name of this error.
-         *
-         * @return {String}
-         * @api public
-         */
-        Object.defineProperty(this, 'name', {
-            value: className,
-            configurable: true,
-            enumerable: true
-        });
+        // /**
+        //  * Name of this error.
+        //  *
+        //  * @return {String}
+        //  * @api public
+        //  */
+        // Object.defineProperty( this, 'name', {
+        //     value: className,
+        //     configurable: true,
+        //     enumerable: true,
+        // });
 
-        /**
-         * Message for this error.
-         *
-         * @return {String}
-         * @api public
-         */
-        Object.defineProperty(this, 'message', {
-            value: attrs.message || msg,
-            configurable: true,
-            enumerable: true
-        });
+        // /**
+        //  * Message for this error.
+        //  *
+        //  * @return {String}
+        //  * @api public
+        //  */
+        // Object.defineProperty( this, 'message', {
+        //     value: attrs.message || msg,
+        //     configurable: true,
+        //     enumerable: true,
+        // });
 
-        // expose extra conf attrs as properties
-        for (var key in attrs) {
-            if (!this.hasOwnProperty(key)) {
-                Object.defineProperty(this, key, {
-                    value: attrs[key],
-                    configurable: true,
-                    enumerable: true
-                });
-            }
-        }
+        // // expose extra conf attrs as properties
+        // for ( const key in attrs ) {
+        //     if ( !this.hasOwnProperty( key ) ) {
+        //         Object.defineProperty( this, key, {
+        //             value: attrs[ key ],
+        //             configurable: true,
+        //             enumerable: true,
+        //         });
+        //     }
+        // }
     };
 
     newErrorClass.prototype = Object.create(parent.prototype, {
@@ -700,7 +747,7 @@ function create(options) {
         return useStack ? mixin(this, { stack: this.stack }, true) : mixin(this, {}, true);
     };
 
-    cache(className, errorCode, newErrorClass, options);
+    cache(className, code, newErrorClass, options);
 
     // $FlowFixMe
     return newErrorClass;

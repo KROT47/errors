@@ -79,8 +79,8 @@ it defaults to the `exports` object of this module
 The `parent` option specifies the parent to inherit
 from. If unspecified it defaults to `Error`.
 
-The `defaultMessage`, `defaultExplanation` and
-`defaultResponse` define the default text to use
+The `message`, `explanation` and
+`response` define the default text to use
 for the new errors `message`, `explanation` and
 `response` respectively. These values can be
 overridden at construction time.
@@ -121,7 +121,7 @@ Examples:
  errors.create({
      name: 'SocketReadError',
      code: 4000,
-     defaultMessage: 'Could not read from socket'
+     message: 'Could not read from socket'
  });
  var sre = new errors.SocketReadError();
  sre.message;
@@ -135,9 +135,9 @@ Examples:
  errors.create({
      name: 'SocketReadError',
      code: 4000,
-     defaultMessage: 'Could not read from socket',
-     defaultExplanation: 'Unable to obtain a reference to the socket',
-     defaultResponse: 'Specify a different port or socket and retry the operation'
+     message: 'Could not read from socket',
+     explanation: 'Unable to obtain a reference to the socket',
+     response: 'Specify a different port or socket and retry the operation'
  });
  var sre = new errors.SocketReadError();
  sre.explanation;
@@ -153,13 +153,13 @@ Examples:
 
 * **Function** *parent* The parent to inherit from.
 
-* **String** *defaultMessage* The default message.
+* **String** *message* The default message.
 
 * **Number** *code* The error code.
 
-* **String** *defaultExplanation* The default explanation.
+* **String** *explanation* The default explanation.
 
-* **String** *defaultResponse* The default operator response.
+* **String** *response* The default operator response.
 
 ### Return:
 

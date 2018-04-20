@@ -10,7 +10,7 @@ console.log("-------------");
 // default message
 errors.create({
     name: 'RuntimeError',
-    defaultMessage: 'A runtime error occured during processing'
+    message: 'A runtime error occured during processing'
 });
 console.log(new errors.RuntimeError().toString());
 
@@ -19,9 +19,9 @@ console.log("-------------");
 // default message, explanation and response
 errors.create({
     name: 'FileNotFoundError',
-    defaultMessage: 'The requested file could not be found',
-    defaultExplanation: 'The file /home/boden/foo could not be found',
-    defaultResponse: 'Verify the file exists and retry the operation'
+    message: 'The requested file could not be found',
+    explanation: 'The file /home/boden/foo could not be found',
+    response: 'Verify the file exists and retry the operation'
 });
 console.log(new errors.FileNotFoundError().toString());
 
@@ -47,11 +47,11 @@ console.log("-------------");
 // inheritance
 errors.create({
     name: 'FatalError',
-    defaultMessage: 'A fatal error occurred',
+    message: 'A fatal error occurred',
 });
 errors.create({
     name: 'FatalSecurityError',
-    defaultMessage: 'A security error occurred, the app must exit',
+    message: 'A security error occurred, the app must exit',
     parent: errors.FatalError
 });
 try {

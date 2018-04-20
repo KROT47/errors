@@ -56,7 +56,7 @@ import errors from '@bubblehunt/errors';
 
 #### Override flow types
 
-See example at `test/flow.js`
+See example at `test/flow`
 
 
 #### Create new errors
@@ -81,7 +81,7 @@ You can define a default message for the error:
 // default message
 errors.create({
     name: 'RuntimeError',
-    defaultMessage: 'A runtime error occurred during processing'
+    message: 'A runtime error occurred during processing'
 });
 console.log(new errors.RuntimeError().toString());
 ```
@@ -99,9 +99,9 @@ Define a default message, explanation and response:
 // default message, explanation and response
 errors.create({
     name: 'FileNotFoundError',
-    defaultMessage: 'The requested file could not be found',
-    defaultExplanation: 'The file /home/boden/foo could not be found',
-    defaultResponse: 'Verify the file exists and retry the operation'
+    message: 'The requested file could not be found',
+    explanation: 'The file /home/boden/foo could not be found',
+    response: 'Verify the file exists and retry the operation'
 });
 console.log(new errors.FileNotFoundError().toString());
 ```
@@ -225,11 +225,11 @@ For example:
 // inheritance
 errors.create({
     name: 'FatalError',
-    defaultMessage: 'A fatal error occurred',
+    message: 'A fatal error occurred',
 });
 errors.create({
     name: 'FatalSecurityError',
-    defaultMessage: 'A security error occurred, the app must exit',
+    message: 'A security error occurred, the app must exit',
     parent: errors.FatalError
 });
 try {
