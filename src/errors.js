@@ -560,7 +560,15 @@ function create( options: ErrorOptionsType ): Class<ErrorType> {
             // hack around the defineProperty for stack so
             // we can delay stack formatting until access
             // for performance reasons
-            Error.captureStackTrace( stack, scope[ className ] );
+            if ( Error.captureStackTrace ) {
+                Error.captureStackTrace( stack, scope[ className ] );
+            } else {
+                try {
+                    throw new Error();
+                } catch( e ) {
+                    stack.stack = e.stack;
+                }
+            }
 
             /**
              * Return the stack tracks for the error.

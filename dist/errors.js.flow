@@ -1,7 +1,6 @@
 /* @flow */
 
-declare export default
-    ErrorsModuleType<UserDefinedOptionsType>;
+declare export default ErrorsModuleType<UserDefinedOptionsType>;
 
 export type ErrorsModuleType<UserDefinedOptionsType> =
     & ErrorsModulePrototypeType<
@@ -32,8 +31,6 @@ export interface DefaultErrorType extends Error {
 
     toJSON: () => Object,
 };
-
-// export type DefaultErrorType = Error;
 
 export type MapperFunctionType<ErrorType: DefaultErrorType> =
     ( err: ErrorType ) => ErrorType;
